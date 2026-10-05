@@ -70,8 +70,9 @@ Repositório: [prova02-integration-test-ThiagoSilveiraMazuco](https://github.com
 Projeto Sonar: [prova02-integration-test-ThiagoSilveiraMazuco](https://sonarcloud.io/dashboard?id=Thiago757_prova02-integration-test-ThiagoSilveiraMazuco).
 Organização: `thiago757-2`.
 
-O novo repositório precisa do secret `SONAR_TOKEN` e da análise por GitHub Actions
-no projeto Sonar correspondente. O workflow inicia em push para `master`/`main`
+O secret `SONAR_TOKEN` foi configurado no novo repositório em 05/10/2026.
+A análise automática foi desligada somente no projeto da prova 02 para usar
+GitHub Actions. O workflow inicia em push para `master`/`main`
 ou manualmente em Actions e aguarda o Quality Gate.
 
 O Sonar analisa o backend original em `server/`, `shared/` e `prova-server.ts`.
