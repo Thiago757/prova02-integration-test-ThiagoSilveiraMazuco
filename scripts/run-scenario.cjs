@@ -1,15 +1,26 @@
 const { fork, spawn } = require('node:child_process');
+const { mkdirSync, rmSync } = require('node:fs');
 const { resolve } = require('node:path');
 
+const rootDirectory = resolve(__dirname, '..');
+const coverageDirectory = resolve(rootDirectory, 'output/v8');
+// Descarta somente medições temporárias anteriores, nunca dados da API original.
+rmSync(coverageDirectory, { recursive: true, force: true });
+mkdirSync(coverageDirectory, { recursive: true });
 const apiDirectory = resolve(__dirname, '../api/carga-facil');
 const api = fork(resolve(apiDirectory, 'prova-server.ts'), [], {
   cwd: apiDirectory,
   execArgv: ['--import', 'tsx'],
-  env: { ...process.env, CARGA_FACIL_PORT: '0' },
+  env: {
+    ...process.env,
+    CARGA_FACIL_PORT: '0',
+    NODE_V8_COVERAGE: coverageDirectory
+  },
   stdio: ['ignore', 'inherit', 'inherit', 'ipc']
 });
 let tests;
 let finished = false;
+let shutdownTimer;
 const timer = setTimeout(() => {
   console.error(
     'A API não iniciou em 30 segundos. Confira npm ci e Node 24.15+.'
@@ -23,6 +34,14 @@ function finish(code) {
   clearTimeout(timer);
   process.exitCode = code;
   if (tests && tests.exitCode === null) tests.kill('SIGTERM');
+  shutdownTimer = setTimeout(() => {
+    console.error(
+      'A API não encerrou normalmente; a cobertura pode estar incompleta.'
+    );
+    process.exitCode = 1;
+    api.kill('SIGKILL');
+  }, 10000);
+  shutdownTimer.unref();
   api.kill('SIGTERM');
 }
 
@@ -39,7 +58,7 @@ api.once('message', ({ baseUrl, email, otherEmail, password }) => {
       ...process.argv.slice(2)
     ],
     {
-      cwd: resolve(__dirname, '..'),
+      cwd: rootDirectory,
       env: {
         ...process.env,
         CARGA_FACIL_BASE_URL: baseUrl,
@@ -65,6 +84,23 @@ api.once('exit', () => {
     console.error('A API encerrou antes de terminar os testes.');
     finish(1);
   }
+});
+// O LCOV só é gerado após o backend encerrar e gravar a cobertura V8.
+api.once('close', () => {
+  clearTimeout(shutdownTimer);
+  if (!tests || process.exitCode === 130) return;
+  const report = spawn(
+    process.execPath,
+    [require.resolve('c8/bin/c8.js'), 'report'],
+    { cwd: rootDirectory, stdio: 'inherit' }
+  );
+  report.once('error', error => {
+    console.error(error.message);
+    process.exitCode = 1;
+  });
+  report.once('exit', code => {
+    if (code !== 0) process.exitCode = 1;
+  });
 });
 for (const signal of ['SIGTERM', 'SIGINT'])
   process.once(signal, () => finish(130));

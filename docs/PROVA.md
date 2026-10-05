@@ -1,6 +1,6 @@
 # Prova 02 — Thiago Silveira Mazuco — 05/10/2026
 
-## API pronta, testes por fazer
+## API e testes de integração
 
 Use Node.js 24.15 ou outra versão 24 mais recente. O backend utiliza `node:sqlite`.
 
@@ -41,11 +41,12 @@ Os contratos e validações dos corpos estão em `api/carga-facil/shared/validat
 e as rotas em `api/carga-facil/server/routes.ts`.
 Cadastros usam dados fictícios; não use dados pessoais reais neste repositório público.
 
-## Escrever os testes na prova
+## Executar os testes
 
-O arquivo `test/carga_facil.spec.ts` está reservado e contém apenas um TODO.
-Não há cliente de testes implementado, exemplos resolvidos do Carga Fácil
-nem gabarito de asserts.
+O arquivo `test/carga_facil.spec.ts` implementa 30 cenários com Jest e PactumJS.
+Veja [a descrição C01–C30](CENARIOS.md), com entradas, resultados e critérios.
+Os testes fazem requisições reais à API local, validam status/corpo/persistência
+e limpam seus próprios registros. Não precisam de serviços externos.
 
 ```sh
 npm test
@@ -75,9 +76,19 @@ A análise automática foi desligada somente no projeto da prova 02 para usar
 GitHub Actions. O workflow inicia em push para `master`/`main`
 ou manualmente em Actions e aguarda o Quality Gate.
 
+A estrutura segue a pipeline de referência de Guilherme Goulart, com dois jobs:
+`Run Integration Tests` (`build`) e `Run SonarCloud` (`sonarcloud`).
+O primeiro valida formatação/ESLint/TypeScript, executa `npm test` e guarda
+os relatórios. O segundo depende do sucesso do primeiro (`needs: build`),
+baixa o mesmo artefato em `output/` e envia execução/LCOV ao Sonar.
+Ambos usam Node 24; não há nova execução automática diária.
+
 O Sonar analisa o backend original em `server/`, `shared/` e `prova-server.ts`.
-A execução do arquivo TODO é reportada como pendente, não como teste aprovado.
-Não há cobertura de testes implementados. Nenhum relatório de 100% foi incluído.
+O relatório de execução informa os resultados reais dos 30 testes.
+A cobertura é coletada com `NODE_V8_COVERAGE` somente no processo do backend.
+Após seu encerramento, o c8 gera `output/coverage/lcov.info`, que o Sonar importa.
+Todos os arquivos TypeScript do escopo analisado entram na medição, incluindo
+os não exercitados. Nenhuma cobertura de 100% é inventada.
 Análise publicada e Quality Gate aprovado são coisas diferentes: o gate poderá
 falhar por problemas reais da API ou por cobertura, e essas falhas não são ocultadas.
 
@@ -87,7 +98,12 @@ Este ambiente foi copiado para o repositório específico da prova 02 em 05/10/2
 O repositório e o projeto Sonar da prova 01 não foram alterados.
 Resultados antigos do projeto `integration-tests-jest` não comprovam a análise
 deste novo projeto: confira o workflow e o painel da prova 02 indicados acima.
-As regras do gate não foram enfraquecidas, nem os testes foram resolvidos.
+As regras do gate não foram enfraquecidas.
+
+**Publicação autorizada em 05/10/2026:** a suíte implementada e a configuração
+de LCOV passam a integrar o repositório da prova 02. Confira a execução de
+`Node.js CI` do commit mais recente para confirmar testes, envio de cobertura
+e Quality Gate. A execução remota anterior, com TODO, não comprova estes cenários.
 
 Para análise local após `npm run ci`, no macOS/zsh:
 
@@ -99,13 +115,15 @@ unset SONAR_TOKEN
 ```
 
 Nunca coloque tokens no código, commits, histórico do terminal ou chat.
-Quando os testes forem escritos, a cobertura precisa instrumentar o backend,
-pois ele roda em processo separado; cobertura somente de um cliente não mede a API.
+A cobertura mede o backend, que roda em processo separado, não apenas os testes.
 
 ## Relatórios
 
-- `output/report.html`: relatório Jest, inicialmente apenas com TODO.
+- `output/report.html`: relatório Jest com os resultados e descrições dos cenários.
 - `output/eslint.html`: validação da infraestrutura e dos arquivos de testes.
 - `output/sonar-test-execution.xml`: execução no formato genérico do Sonar.
+- `output/coverage/lcov.info`: cobertura real do backend para o Sonar.
+- `output/coverage/lcov-report/index.html`: cobertura por arquivo e linha.
+- `output/coverage/coverage-summary.json`: resumo numérico da cobertura.
 
 O ESLint e o Prettier não reescrevem a cópia do backend; o Sonar faz sua análise estática.

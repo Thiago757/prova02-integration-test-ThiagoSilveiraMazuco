@@ -1,4 +1,4 @@
-name: Prova 02 — Preparação e SonarCloud
+name: Node.js CI
 
 on:
   push:
@@ -11,36 +11,31 @@ permissions:
   contents: read
 
 jobs:
-  test-and-sonar:
-    name: Preparação da prova e Quality Gate
+  build:
+    name: Run Integration Tests
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7.0.0
-        with:
-          fetch-depth: 0
-      - name: Usar Node.js 24
+      - name: Use Node.js 24
         uses: actions/setup-node@v7.0.0
         with:
           node-version: '24.15.0'
           cache: npm
       - name: Instalar dependências reproduzíveis
         run: npm ci
-      - name: Validar infraestrutura e iniciar API da prova
-        run: npm run ci
-      - name: Verificar credencial do SonarCloud
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: Check formatting, ESLint and TypeScript
         run: |
-          if [ -z "$SONAR_TOKEN" ]; then
-            echo '::error::Cadastre SONAR_TOKEN em Settings > Secrets and variables > Actions deste repositório.'
-            exit 1
-          fi
-      - name: Analisar no SonarCloud e aguardar o Quality Gate
-        uses: SonarSource/sonarqube-scan-action@v8.3.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          npm run clean
+          npm run verify
+          npm run eslint
+          npm run typecheck
+      - name: Run integration tests with API coverage
+        run: npm test
+      - name: Check SonarCloud reports
+        run: |
+          test -s output/sonar-test-execution.xml
+          test -s output/coverage/lcov.info
       - name: Guardar relatórios da prova
         if: always()
         uses: actions/upload-artifact@v7.0.1
@@ -48,4 +43,43 @@ jobs:
           name: relatorios-prova
           path: |
             output/
+            !output/v8/
+          retention-days: 7
           if-no-files-found: warn
+
+  sonarcloud:
+    name: Run SonarCloud
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7.0.0
+        with:
+          fetch-depth: 0
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v7.0.0
+        with:
+          node-version: '24.15.0'
+          cache: npm
+      - name: Install dependencies for TypeScript analysis
+        run: npm ci --ignore-scripts
+      - name: Download test and coverage reports
+        uses: actions/download-artifact@v8.0.1
+        with:
+          name: relatorios-prova
+          path: output/
+      - name: Check SonarCloud reports and credential
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          test -s output/sonar-test-execution.xml
+          test -s output/coverage/lcov.info
+          if [ -z "$SONAR_TOKEN" ]; then
+            echo '::error::Cadastre SONAR_TOKEN em Settings > Secrets and variables > Actions deste repositório.'
+            exit 1
+          fi
+      - name: SonarCloud Scan and Quality Gate
+        uses: SonarSource/sonarqube-scan-action@v8.3.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

@@ -6,7 +6,10 @@ async function main() {
       'Defina SONAR_TOKEN no ambiente ou no secret do GitHub. Não coloque o token no código. Veja docs/PROVA.md.'
     );
   }
-  for (const path of ['output/sonar-test-execution.xml']) {
+  for (const path of [
+    'output/sonar-test-execution.xml',
+    'output/coverage/lcov.info'
+  ]) {
     if (!existsSync(path))
       throw new Error(`Falta ${path}. Execute npm run ci antes do Sonar.`);
   }

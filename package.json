@@ -1,7 +1,7 @@
 {
   "name": "prova02-integration-test-thiagosilveiramazuco",
   "version": "1.0.0",
-  "description": "Prova 02 — Testes de integração — Thiago Silveira Mazuco. API Carga Fácil sem resolução dos testes.",
+  "description": "Prova 02 — Testes de integração da API Carga Fácil com Jest e PactumJS — Thiago Silveira Mazuco.",
   "main": "index.js",
   "engines": {
     "node": ">=24.15.0 <25"
@@ -14,6 +14,7 @@
     "@types/jest": "^30.0.0",
     "@typescript-eslint/eslint-plugin": "^7.13.1",
     "@typescript-eslint/parser": "^7.13.1",
+    "c8": "^10.1.3",
     "cookie": "^1.0.2",
     "dotenv": "^17.2.2",
     "eslint": "^8.56.0",

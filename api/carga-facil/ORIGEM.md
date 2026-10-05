@@ -22,6 +22,7 @@ As validações e proteções originais continuam ativas: sessão em cookie, ori
 CSRF, validação de CPF/CNPJ, isolamento por usuário e restrições de exclusão.
 
 O Sonar analisa o backend em `server/`, `shared/` e `prova-server.ts`,
-e classifica `test/` como testes. Os testes do Carga Fácil serão escritos na prova;
-o arquivo preparado contém apenas `test.todo`, sem solução ou cobertura fictícia.
+e classifica `test/` como testes. A suíte usa PactumJS para requisições HTTP reais.
+O c8 coleta cobertura V8 no processo da API e a converte para LCOV, sem medir
+apenas um cliente de testes ou gerar cobertura fictícia.
 O código copiado da API não é reformatado pelo projeto de testes.
