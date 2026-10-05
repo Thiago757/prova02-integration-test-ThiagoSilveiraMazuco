@@ -1,11 +1,11 @@
-# Ambiente para a prova de 05/10/2026
+# Prova 02 — Thiago Silveira Mazuco — 05/10/2026
 
 ## API pronta, testes por fazer
 
 Use Node.js 24.15 ou outra versão 24 mais recente. O backend utiliza `node:sqlite`.
 
 ```sh
-cd integration-tests-jest
+cd prova02-integration-test-ThiagoSilveiraMazuco
 npm ci
 npm run api
 ```
@@ -66,11 +66,12 @@ ficam separados em `npm run test:external`.
 
 ## SonarCloud
 
-Projeto: [integration-tests-jest](https://sonarcloud.io/dashboard?id=Thiago757_integration-tests-jest).
+Repositório: [prova02-integration-test-ThiagoSilveiraMazuco](https://github.com/Thiago757/prova02-integration-test-ThiagoSilveiraMazuco).
+Projeto Sonar: [prova02-integration-test-ThiagoSilveiraMazuco](https://sonarcloud.io/dashboard?id=Thiago757_prova02-integration-test-ThiagoSilveiraMazuco).
 Organização: `thiago757-2`.
 
-O secret `SONAR_TOKEN` foi cadastrado no GitHub, e a análise automática foi
-desligada para usar GitHub Actions. O workflow inicia em push para `master`/`main`
+O novo repositório precisa do secret `SONAR_TOKEN` e da análise por GitHub Actions
+no projeto Sonar correspondente. O workflow inicia em push para `master`/`main`
 ou manualmente em Actions e aguarda o Quality Gate.
 
 O Sonar analisa o backend original em `server/`, `shared/` e `prova-server.ts`.
@@ -79,14 +80,12 @@ Não há cobertura de testes implementados. Nenhum relatório de 100% foi inclu�
 Análise publicada e Quality Gate aprovado são coisas diferentes: o gate poderá
 falhar por problemas reais da API ou por cobertura, e essas falhas não são ocultadas.
 
-### Verificação realizada em 03/10/2026
+### Repositório específico da prova 02
 
-A [execução no GitHub Actions](https://github.com/Thiago757/integration-tests-jest/actions/runs/37131442384)
-instalou as dependências, iniciou a API e enviou a análise ao Sonar com sucesso.
-O Sonar processou 10.375 linhas de código e registrou zero testes implementados,
-um TODO e cobertura de 0%.
-O Quality Gate reprovou por cobertura abaixo de 80% e classificação de
-confiabilidade E (9 apontamentos de bugs). Não é erro de conexão ou de token.
+Este ambiente foi copiado para o repositório específico da prova 02 em 05/10/2026.
+O repositório e o projeto Sonar da prova 01 não foram alterados.
+Resultados antigos do projeto `integration-tests-jest` não comprovam a análise
+deste novo projeto: confira o workflow e o painel da prova 02 indicados acima.
 As regras do gate não foram enfraquecidas, nem os testes foram resolvidos.
 
 Para análise local após `npm run ci`, no macOS/zsh:

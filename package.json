@@ -1,7 +1,7 @@
 {
-  "name": "integration-tests-jest",
+  "name": "prova02-integration-test-thiagosilveiramazuco",
   "version": "1.0.0",
-  "description": "API testing with a simple integration between JestJS and PactumJS.",
+  "description": "Prova 02 — Testes de integração — Thiago Silveira Mazuco. API Carga Fácil sem resolução dos testes.",
   "main": "index.js",
   "engines": {
     "node": ">=24.15.0 <25"
@@ -57,12 +57,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ugioni/integration-tests-jest.git"
+    "url": "git+https://github.com/Thiago757/prova02-integration-test-ThiagoSilveiraMazuco.git"
   },
-  "author": "leandro.ugioni",
+  "author": "Thiago Silveira Mazuco",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/ugioni/integration-tests-jest/issues"
+    "url": "https://github.com/Thiago757/prova02-integration-test-ThiagoSilveiraMazuco/issues"
   },
-  "homepage": "https://github.com/ugioni/integration-tests-jest#readme"
+  "homepage": "https://github.com/Thiago757/prova02-integration-test-ThiagoSilveiraMazuco#readme"
 }
